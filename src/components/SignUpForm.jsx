@@ -1,7 +1,6 @@
-// src/components/SignupForm.jsx
-
 import { useState } from "react";
 import { signupUser } from "../services/authService";
+import { Link, useNavigate } from "react-router-dom";
 
 function SignupForm() {
   const [email, setEmail] = useState("");
@@ -9,6 +8,8 @@ function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,37 +28,28 @@ function SignupForm() {
     try {
       setLoading(true);
 
-      const data = await signupUser(email, password);
+      await signupUser(email, password);
 
       console.log("User has successfully signed up.");
-      console.log(data);
+      navigate("/login");
 
     } catch (err) {
-      handleError(err.message);
+      if (err.message === "EMAIL_EXISTS") {
+        setError("Email already registered.");
+      } else if (err.message === "INVALID_EMAIL") {
+        setError("Invalid email address.");
+      } else {
+        setError("Something went wrong.");
+      }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleError = (message) => {
-    switch (message) {
-      case "EMAIL_EXISTS":
-        setError("Email already registered.");
-        break;
-      case "INVALID_EMAIL":
-        setError("Invalid email address.");
-        break;
-      case "WEAK_PASSWORD : Password should be at least 6 characters":
-        setError("Password should be at least 6 characters.");
-        break;
-      default:
-        setError("Something went wrong.");
     }
   };
 
   return (
     <div className="auth-container">
       <h2>Sign Up</h2>
+
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -86,6 +78,10 @@ function SignupForm() {
           {loading ? "Signing Up..." : "Sign Up"}
         </button>
       </form>
+
+      <p className="switch-auth">
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
     </div>
   );
 }
