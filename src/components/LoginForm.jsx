@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { loginUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
@@ -23,11 +22,10 @@ function LoginForm() {
 
       const data = await loginUser(email, password);
 
-      // Store token
       localStorage.setItem("token", data.idToken);
+      localStorage.setItem("email", data.email);
 
       navigate("/welcome");
-
     } catch (err) {
       if (err.message === "EMAIL_NOT_FOUND") {
         alert("Email not found.");

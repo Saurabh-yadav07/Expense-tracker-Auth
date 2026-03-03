@@ -1,8 +1,5 @@
-
 const API_KEY = "AIzaSyBNBQtI52p3uPPGtdrCRHlzvSsBqhS8ZNM";
-
-const BASE_URL =
-  "https://identitytoolkit.googleapis.com/v1";
+const BASE_URL = "https://identitytoolkit.googleapis.com/v1";
 
 export async function signupUser(email, password) {
   const response = await fetch(
@@ -20,7 +17,6 @@ export async function signupUser(email, password) {
 
   const data = await response.json();
   if (!response.ok) throw new Error(data.error.message);
-
   return data;
 }
 
@@ -33,6 +29,26 @@ export async function loginUser(email, password) {
       body: JSON.stringify({
         email,
         password,
+        returnSecureToken: true,
+      }),
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error.message);
+  return data;
+}
+
+export async function updateUserProfile(idToken, displayName, photoUrl) {
+  const response = await fetch(
+    `${BASE_URL}/accounts:update?key=${API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idToken,
+        displayName,
+        photoUrl,
         returnSecureToken: true,
       }),
     }
