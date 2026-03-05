@@ -1,15 +1,40 @@
-import { useState } from "react";
-import { updateUserProfile } from "../services/authService";
+import { useState, useEffect } from "react";
+import { updateUserProfile, getUserProfile } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 
 function CompleteProfileForm() {
+
   const [fullName, setFullName] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+
+    const fetchProfile = async () => {
+
+      try {
+
+        const token = localStorage.getItem("token");
+
+        const data = await getUserProfile(token);
+
+        setFullName(data.displayName || "");
+        setPhotoUrl(data.photoUrl || "");
+
+      } catch (err) {
+        console.log("Failed to fetch profile");
+      }
+
+    };
+
+    fetchProfile();
+
+  }, []);
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     if (!fullName || !photoUrl) {
@@ -18,28 +43,36 @@ function CompleteProfileForm() {
     }
 
     try {
+
       setLoading(true);
 
       const token = localStorage.getItem("token");
 
       await updateUserProfile(token, fullName, photoUrl);
 
-      alert("Profile updated successfully!");
+      alert("Profile updated successfully");
 
       navigate("/welcome");
 
     } catch (err) {
-      alert("Failed to update profile.");
+
+      alert("Failed to update profile");
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
   return (
     <div className="auth-container">
+
       <h2>Complete Your Profile</h2>
 
       <form onSubmit={handleSubmit}>
+
         <input
           type="text"
           placeholder="Full Name"
@@ -57,7 +90,9 @@ function CompleteProfileForm() {
         <button disabled={loading}>
           {loading ? "Updating..." : "Update"}
         </button>
+
       </form>
+
     </div>
   );
 }
