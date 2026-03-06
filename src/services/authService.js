@@ -1,145 +1,71 @@
 const API_KEY = "AIzaSyBNBQtI52p3uPPGtdrCRHlzvSsBqhS8ZNM";
+
 const BASE_URL = "https://identitytoolkit.googleapis.com/v1";
 
-/* ===============================
-   SIGNUP USER
-================================ */
+export const signupUser = async (email, password) => {
+  const res = await fetch(`${BASE_URL}/accounts:signUp?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password,
+      returnSecureToken: true
+    })
+  });
 
-export async function signupUser(email, password) {
-  const response = await fetch(
-    `${BASE_URL}/accounts:signUp?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-    }
-  );
+  return res.json();
+};
 
-  const data = await response.json();
+export const loginUser = async (email, password) => {
+  const res = await fetch(`${BASE_URL}/accounts:signInWithPassword?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email,
+      password,
+      returnSecureToken: true
+    })
+  });
 
-  if (!response.ok) {
-    throw new Error(data.error.message);
-  }
+  return res.json();
+};
 
-  return data;
-}
+export const verifyEmail = async (token) => {
+  const res = await fetch(`${BASE_URL}/accounts:sendOobCode?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      requestType: "VERIFY_EMAIL",
+      idToken: token
+    })
+  });
 
-/* ===============================
-   LOGIN USER
-================================ */
+  return res.json();
+};
 
-export async function loginUser(email, password) {
-  const response = await fetch(
-    `${BASE_URL}/accounts:signInWithPassword?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        returnSecureToken: true
-      })
-    }
-  );
+export const updateProfile = async (token, name, photo) => {
+  const res = await fetch(`${BASE_URL}/accounts:update?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      idToken: token,
+      displayName: name,
+      photoUrl: photo,
+      returnSecureToken: true
+    })
+  });
 
-  const data = await response.json();
+  return res.json();
+};
 
-  if (!response.ok) {
-    throw new Error(data.error.message);
-  }
+export const getProfile = async (token) => {
+  const res = await fetch(`${BASE_URL}/accounts:lookup?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      idToken: token
+    })
+  });
 
-  return data;
-}
-
-/* ===============================
-   UPDATE PROFILE
-================================ */
-
-export async function updateUserProfile(idToken, displayName, photoUrl) {
-  const response = await fetch(
-    `${BASE_URL}/accounts:update?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        idToken,
-        displayName,
-        photoUrl,
-        returnSecureToken: true
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error.message);
-  }
-
-  return data;
-}
-
-/* ===============================
-   GET USER PROFILE
-================================ */
-
-export async function getUserProfile(idToken) {
-  const response = await fetch(
-    `${BASE_URL}/accounts:lookup?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        idToken
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error.message);
-  }
-
-  return data.users[0];
-}
-
-/* ===============================
-   SENDING EMAIL VERIFICATION
-================================ */
-
-export async function sendEmailVerification(idToken) {
-  const response = await fetch(
-    `${BASE_URL}/accounts:sendOobCode?key=${API_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        requestType: "VERIFY_EMAIL",
-        idToken
-      })
-    }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error.message);
-  }
-
-  return data;
-}
+  return res.json();
+};

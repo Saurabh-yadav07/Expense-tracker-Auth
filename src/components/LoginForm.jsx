@@ -1,77 +1,62 @@
 import { useState } from "react";
-import { loginUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../services/authService";
 
 function LoginForm() {
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
 
+  const loginHandler = async (e)=>{
     e.preventDefault();
 
-    if(!email || !password){
-      alert("All fields are required");
-      return;
+    const data = await loginUser(email,password);
+
+    if(data.error){
+      alert(data.error.message);
     }
-
-    try{
-
-      const data = await loginUser(email,password);
-
-      localStorage.setItem("token",data.idToken);
-
+    else{
+      localStorage.setItem("idToken",data.idToken);
       navigate("/welcome");
-
     }
-    catch(err){
-
-      if(err.message === "EMAIL_NOT_FOUND"){
-        alert("Email not found");
-      }
-      else if(err.message === "INVALID_PASSWORD"){
-        alert("Incorrect password");
-      }
-      else{
-        alert("Authentication failed");
-      }
-
-    }
-
-  }
+  };
 
   return(
 
     <div className="auth-container">
 
-      <h2>Login</h2>
+      <form onSubmit={loginHandler}>
 
-      <form onSubmit={handleSubmit}>
+        <h2>Login</h2>
 
         <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e)=>setEmail(e.target.value)}
+          type="email"
+          placeholder="Email"
+          required
+          onChange={(e)=>setEmail(e.target.value)}
         />
 
         <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e)=>setPassword(e.target.value)}
+          type="password"
+          placeholder="Password"
+          required
+          onChange={(e)=>setPassword(e.target.value)}
         />
 
-        <button>Login</button>
+        <button type="submit">Login</button>
+
+        <p className="auth-link">
+          Don't have an account?
+          <span onClick={()=>navigate("/signup")}> Signup</span>
+        </p>
 
       </form>
 
     </div>
 
-  )
-
+  );
 }
 
 export default LoginForm;

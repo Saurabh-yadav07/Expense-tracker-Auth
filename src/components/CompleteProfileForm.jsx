@@ -1,99 +1,44 @@
-import { useState, useEffect } from "react";
-import { updateUserProfile, getUserProfile } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-function CompleteProfileForm() {
+function CompleteProfileForm(){
 
-  const [fullName, setFullName] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [name,setName] = useState("");
+  const [photo,setPhoto] = useState("");
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-
-    const fetchProfile = async () => {
-
-      try {
-
-        const token = localStorage.getItem("token");
-
-        const data = await getUserProfile(token);
-
-        setFullName(data.displayName || "");
-        setPhotoUrl(data.photoUrl || "");
-
-      } catch (err) {
-        console.log("Failed to fetch profile");
-      }
-
-    };
-
-    fetchProfile();
-
-  }, []);
-
-  const handleSubmit = async (e) => {
-
+  const submitHandler = (e)=>{
     e.preventDefault();
 
-    if (!fullName || !photoUrl) {
-      alert("All fields are required.");
-      return;
-    }
-
-    try {
-
-      setLoading(true);
-
-      const token = localStorage.getItem("token");
-
-      await updateUserProfile(token, fullName, photoUrl);
-
-      alert("Profile updated successfully");
-
-      navigate("/welcome");
-
-    } catch (err) {
-
-      alert("Failed to update profile");
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
+    alert("Profile updated!");
   };
 
-  return (
+  return(
+
     <div className="auth-container">
 
-      <h2>Complete Your Profile</h2>
+      <form onSubmit={submitHandler}>
 
-      <form onSubmit={handleSubmit}>
+        <h2>Complete Profile</h2>
 
         <input
           type="text"
           placeholder="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          required
+          onChange={(e)=>setName(e.target.value)}
         />
 
         <input
           type="text"
           placeholder="Profile Photo URL"
-          value={photoUrl}
-          onChange={(e) => setPhotoUrl(e.target.value)}
+          required
+          onChange={(e)=>setPhoto(e.target.value)}
         />
 
-        <button disabled={loading}>
-          {loading ? "Updating..." : "Update"}
-        </button>
+        <button type="submit">Update Profile</button>
 
       </form>
 
     </div>
+
   );
 }
 

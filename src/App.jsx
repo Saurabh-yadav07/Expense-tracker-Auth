@@ -1,19 +1,26 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Signup from "./pages/Signup";
+import {BrowserRouter,Routes,Route} from "react-router-dom";
 import Login from "./pages/Login";
-import Welcome from "./pages/Welcome";
+import Signup from "./pages/Signup";
 import CompleteProfile from "./pages/CompleteProfile";
+import Welcome from "./pages/Welcome";
 
-function App() {
-  return (
+function App(){
+
+  return(
+
     <BrowserRouter>
+
       <Routes>
-        <Route path="/" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/welcome" element={<Welcome />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
+
+        <Route path="/" element={<Login/>}/>
+        <Route path="/signup" element={<Signup/>}/>
+        <Route path="/complete-profile" element={<CompleteProfile/>}/>
+        <Route path="/welcome" element={<Welcome/>}/>
+
       </Routes>
+
     </BrowserRouter>
+
   );
 }
 

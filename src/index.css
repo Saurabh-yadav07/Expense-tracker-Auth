@@ -9,7 +9,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea, #764ba2);
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -80,6 +80,75 @@ body {
 .auth-container button:disabled {
   background: #bdbdbd;
   cursor: not-allowed;
+}
+
+/* Auth Links */
+.auth-link {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.auth-link span {
+  color: #667eea;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-link span:hover {
+  text-decoration: underline;
+}
+
+/* Welcome Screen */
+.welcome-container {
+  width: 500px;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.welcome-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Top Bar */
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.logout-btn {
+  background: #e63946;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: #c92c3a;
+}
+
+/* Welcome Buttons */
+.welcome-actions button {
+  margin: 10px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: none;
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome-actions button:hover {
+  background: #5a67d8;
 }
 
 /* Animation */

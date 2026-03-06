@@ -1,89 +1,75 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signupUser } from "../services/authService";
-import { Link, useNavigate } from "react-router-dom";
 
-function SignupForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+function SignUpForm(){
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const [email,setEmail] = useState("");
+  const [password,setPassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
+
+  const submitHandler = async (e)=>{
     e.preventDefault();
-    setError("");
 
-    if (!email || !password || !confirmPassword) {
-      setError("All fields are required.");
+    if(password !== confirmPassword){
+      alert("Passwords do not match");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+    const data = await signupUser(email,password);
+
+    if(data.error){
+      alert(data.error.message);
     }
-
-    try {
-      setLoading(true);
-
-      await signupUser(email, password);
-
-      console.log("User has successfully signed up.");
-      navigate("/login");
-
-    } catch (err) {
-      if (err.message === "EMAIL_EXISTS") {
-        setError("Email already registered.");
-      } else if (err.message === "INVALID_EMAIL") {
-        setError("Invalid email address.");
-      } else {
-        setError("Something went wrong.");
-      }
-    } finally {
-      setLoading(false);
+    else{
+      alert("Signup successful!");
+      navigate("/");
     }
   };
 
-  return (
-    <div className="auth-container">
-      <h2>Sign Up</h2>
+  return(
 
-      <form onSubmit={handleSubmit}>
+    <div className="auth-container">
+
+      <form onSubmit={submitHandler}>
+
+        <h2>Signup</h2>
+
         <input
           type="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          required
+          onChange={(e)=>setEmail(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          required
+          onChange={(e)=>setPassword(e.target.value)}
         />
 
         <input
           type="password"
           placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          onChange={(e)=>setConfirmPassword(e.target.value)}
         />
 
-        {error && <p className="error">{error}</p>}
+        <button type="submit">Signup</button>
 
-        <button disabled={loading}>
-          {loading ? "Signing Up..." : "Sign Up"}
-        </button>
+        <p className="auth-link">
+          Already have an account?
+          <span onClick={()=>navigate("/")}> Login</span>
+        </p>
+
       </form>
 
-      <p className="switch-auth">
-        Already have an account? <Link to="/login">Login</Link>
-      </p>
     </div>
+
   );
 }
 
-export default SignupForm;
+export default SignUpForm;

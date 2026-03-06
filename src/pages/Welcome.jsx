@@ -1,50 +1,38 @@
-import { sendEmailVerification } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
-function Welcome() {
+function Welcome(){
 
-  const handleVerifyEmail = async () => {
+  const navigate = useNavigate();
 
-    try{
+  const logoutHandler = ()=>{
 
-      const token = localStorage.getItem("token");
+    localStorage.removeItem("idToken");
 
-      await sendEmailVerification(token);
+    navigate("/");
 
-      alert("Verification email sent! Please check your inbox.");
-
-    }
-    catch(err){
-
-      if(err.message === "INVALID_ID_TOKEN"){
-        alert("Session expired. Please login again.");
-      }
-      else if(err.message === "USER_DISABLED"){
-        alert("User account disabled.");
-      }
-      else{
-        alert("Failed to send verification email.");
-      }
-
-    }
-
-  }
+  };
 
   return(
 
     <div className="auth-container">
 
-      <h2>Welcome to Expense Tracker</h2>
+      <div >
 
-      <p>Your profile is incomplete</p>
+        <h2>Welcome</h2>
 
-      <button onClick={handleVerifyEmail}>
-        Verify Email
-      </button>
+        <button onClick={logoutHandler}>
+          Logout
+        </button>
+
+      </div>
+
+      <h1 style={{textAlign:"center",marginTop:"40px"}}>
+        You are logged in!
+      </h1>
 
     </div>
 
-  )
-
+  );
 }
 
 export default Welcome;
