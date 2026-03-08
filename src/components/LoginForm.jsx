@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {loginUser} from "../services/authService";
 
-function LoginForm() {
+function LoginForm(){
 
   const navigate = useNavigate();
 
@@ -10,6 +10,7 @@ function LoginForm() {
   const [password,setPassword] = useState("");
 
   const loginHandler = async (e)=>{
+
     e.preventDefault();
 
     const data = await loginUser(email,password);
@@ -21,6 +22,7 @@ function LoginForm() {
       localStorage.setItem("idToken",data.idToken);
       navigate("/welcome");
     }
+
   };
 
   return(
@@ -48,8 +50,17 @@ function LoginForm() {
         <button type="submit">Login</button>
 
         <p className="auth-link">
+          Forgot Password?
+          <span onClick={()=>navigate("/forgot-password")}>
+            Reset
+          </span>
+        </p>
+
+        <p className="auth-link">
           Don't have an account?
-          <span onClick={()=>navigate("/signup")}> Signup</span>
+          <span onClick={()=>navigate("/signup")}>
+            Signup
+          </span>
         </p>
 
       </form>

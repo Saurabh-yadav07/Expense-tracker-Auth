@@ -69,3 +69,18 @@ export const getProfile = async (token) => {
 
   return res.json();
 };
+
+/* FOR FORGOT PASSWORD */
+
+export const sendPasswordResetEmail = async (email) => {
+  const res = await fetch(`${BASE_URL}/accounts:sendOobCode?key=${API_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      requestType: "PASSWORD_RESET",
+      email: email
+    })
+  });
+
+  return res.json();
+};
