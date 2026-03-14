@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { addExpense, getExpenses } from "../services/expenseService";
 
 function Welcome() {
-
   const navigate = useNavigate();
 
   const [money, setMoney] = useState("");
@@ -15,49 +15,58 @@ function Welcome() {
     navigate("/");
   };
 
-  const submitHandler = (e) => {
-    e.preventDefault();
+  // Getting expenses when page loads
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      const data = await getExpenses();
 
-    const newExpense = {
-      id: Date.now(),
-      money,
-      description,
-      category
+      setExpenses(data);
     };
 
-    setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+    fetchExpenses();
+  }, []);
 
-    // clear inputs
+  const submitHandler = async (e) => {
+    e.preventDefault();
+
+    const expense = {
+      money,
+      description,
+      category,
+    };
+
+    const res = await addExpense(expense);
+
+    if (res.name) {
+      const newExpense = {
+        id: res.name,
+        ...expense,
+      };
+
+      setExpenses((prev) => [...prev, newExpense]);
+    }
+
     setMoney("");
     setDescription("");
     setCategory("");
   };
 
   return (
-
     <div className="auth-container">
-
-      {/* Top Section */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-
+      <div >
         <h2>Welcome</h2>
 
-        <button onClick={logoutHandler}>
-          Logout
-        </button>
-
+        <button onClick={logoutHandler}>Logout</button>
       </div>
 
-      <h3 style={{marginTop:"20px"}}>Add Daily Expense</h3>
+      <h3>Add Expense</h3>
 
-      {/* Expense Form */}
       <form onSubmit={submitHandler}>
-
         <input
           type="number"
           placeholder="Money spent"
           value={money}
-          onChange={(e)=>setMoney(e.target.value)}
+          onChange={(e) => setMoney(e.target.value)}
           required
         />
 
@@ -65,58 +74,48 @@ function Welcome() {
           type="text"
           placeholder="Description"
           value={description}
-          onChange={(e)=>setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           required
         />
 
         <select
           value={category}
-          onChange={(e)=>setCategory(e.target.value)}
+          onChange={(e) => setCategory(e.target.value)}
           required
         >
           <option value="">Select Category</option>
           <option value="Food">Food</option>
-          <option value="Petrol">Petrol</option>
-          <option value="Salary">Salary</option>
-          <option value="Shopping">Shopping</option>
+          <option value="Petrol">Fuel</option>
+          <option value="Salary">Shopping</option>
+          <option value="Food">Bills</option>
+          <option value="Petrol">Tech/Gadgets</option>
+          <option value="Salary">Other</option>
         </select>
 
-        <button type="submit">
-          Add Expense
-        </button>
-
+        <button type="submit">Add Expense</button>
       </form>
 
-      {/* Expense List */}
-
-      <div style={{marginTop:"30px"}}>
-
+      <div style={{ marginTop: "30px" }}>
         <h3>Your Expenses</h3>
 
-        {expenses.length === 0 && <p>No expenses added yet</p>}
-
-        {expenses.map((expense) => (
+        {expenses.map((exp) => (
           <div
-            key={expense.id}
+            key={exp.id}
             style={{
-              border:"1px solid #ddd",
-              padding:"10px",
-              marginTop:"10px",
-              borderRadius:"6px",
-              display:"flex",
-              justifyContent:"space-between"
+              border: "1px solid #ddd",
+              padding: "10px",
+              marginTop: "10px",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            <span>₹ {expense.money}</span>
-            <span>{expense.description}</span>
-            <span>{expense.category}</span>
+            <span>₹ {exp.money}</span>
+            <span>{exp.description}</span>
+            <span>{exp.category}</span>
           </div>
         ))}
-
       </div>
-
     </div>
-
   );
 }
 
