@@ -1,43 +1,48 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { addExpense, getExpenses } from "../services/expenseService";
+import ExpenseForm from "../components/ExpenseForm";
+import ExpenseList from "../components/ExpenseList";
+import {
+  addExpense,
+  getExpenses,
+  deleteExpense,
+  updateExpense,
+} from "../services/expenseService";
 
 function Welcome() {
   const navigate = useNavigate();
 
-  const [money, setMoney] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
   const [expenses, setExpenses] = useState([]);
+  const [editExpense, setEditExpense] = useState(null);
 
   const logoutHandler = () => {
     localStorage.removeItem("idToken");
     navigate("/");
   };
 
-  // Getting expenses when page loads
   useEffect(() => {
     const fetchExpenses = async () => {
       const data = await getExpenses();
-
       setExpenses(data);
     };
 
     fetchExpenses();
   }, []);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const addOrUpdateExpense = async (expense) => {
+    if (editExpense) {
+      await updateExpense(editExpense.id, expense);
 
-    const expense = {
-      money,
-      description,
-      category,
-    };
+      setExpenses((prev) =>
+        prev.map((exp) =>
+          exp.id === editExpense.id ? { id: editExpense.id, ...expense } : exp,
+        ),
+      );
 
-    const res = await addExpense(expense);
+      setEditExpense(null);
+    } else {
+      const res = await addExpense(expense);
 
-    if (res.name) {
       const newExpense = {
         id: res.name,
         ...expense,
@@ -45,76 +50,38 @@ function Welcome() {
 
       setExpenses((prev) => [...prev, newExpense]);
     }
+  };
 
-    setMoney("");
-    setDescription("");
-    setCategory("");
+  const deleteHandler = async (id) => {
+    await deleteExpense(id);
+
+    console.log("Expense successfuly deleted");
+
+    setExpenses((prev) => prev.filter((exp) => exp.id !== id));
+  };
+
+  const editHandler = (expense) => {
+    setEditExpense(expense);
   };
 
   return (
-    <div className="auth-container">
-      <div >
-        <h2>Welcome</h2>
+    <div className="welcome-container">
+      <div className="header">
+        <h2>Expense Tracker</h2>
 
-        <button onClick={logoutHandler}>Logout</button>
+        <button className="logout-btn" onClick={logoutHandler}>Logout</button>
       </div>
 
-      <h3>Add Expense</h3>
+      <ExpenseForm
+        addOrUpdateExpense={addOrUpdateExpense}
+        editExpense={editExpense}
+      />
 
-      <form onSubmit={submitHandler}>
-        <input
-          type="number"
-          placeholder="Money spent"
-          value={money}
-          onChange={(e) => setMoney(e.target.value)}
-          required
-        />
-
-        <input
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        >
-          <option value="">Select Category</option>
-          <option value="Food">Food</option>
-          <option value="Petrol">Fuel</option>
-          <option value="Salary">Shopping</option>
-          <option value="Food">Bills</option>
-          <option value="Petrol">Tech/Gadgets</option>
-          <option value="Salary">Other</option>
-        </select>
-
-        <button type="submit">Add Expense</button>
-      </form>
-
-      <div style={{ marginTop: "30px" }}>
-        <h3>Your Expenses</h3>
-
-        {expenses.map((exp) => (
-          <div
-            key={exp.id}
-            style={{
-              border: "1px solid #ddd",
-              padding: "10px",
-              marginTop: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <span>₹ {exp.money}</span>
-            <span>{exp.description}</span>
-            <span>{exp.category}</span>
-          </div>
-        ))}
-      </div>
+      <ExpenseList
+        expenses={expenses}
+        onDelete={deleteHandler}
+        onEdit={editHandler}
+      />
     </div>
   );
 }

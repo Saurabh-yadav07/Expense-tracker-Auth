@@ -16,7 +16,6 @@ export const addExpense = async (expense) => {
 export const getExpenses = async () => {
 
   const res = await fetch(`${BASE_URL}.json`);
-
   const data = await res.json();
 
   const expenses = [];
@@ -29,4 +28,28 @@ export const getExpenses = async () => {
   }
 
   return expenses;
+};
+
+
+export const deleteExpense = async (id) => {
+
+  const res = await fetch(`${BASE_URL}/${id}.json`, {
+    method: "DELETE"
+  });
+
+  return res;
+};
+
+
+export const updateExpense = async (id, expense) => {
+
+  const res = await fetch(`${BASE_URL}/${id}.json`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(expense)
+  });
+
+  return res;
 };
